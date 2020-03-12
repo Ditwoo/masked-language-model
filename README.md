@@ -8,7 +8,7 @@ CONFIG='<path to .yml with config>'
 catalyst-dl run --expdir src \
     --config ${CONFIG} \
     --logdir ${LOGDIR} \
-    --distributed \
+    --no-distributed \
     --no-apex \
     --verbose
 ```
