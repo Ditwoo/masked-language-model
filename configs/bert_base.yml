@@ -1,0 +1,73 @@
+model_params:
+  model: BertBasedMLM
+  pretrain: bert-base-uncased
+
+# distributed_params:
+#   opt_level: O1
+#   syncbn: True
+
+stages:
+  state_params:
+    main_metric: loss
+    minimize_metric: True
+
+  data_params:
+    num_workers: &nw 8
+    batch_size: 16
+    train: train_file.txt
+    valid: valid_file.txt
+    tokenizer: bert-base-uncased
+    mask_ignore_index: -1
+
+  criterion_params:
+    criterion: CrossEntropyLoss
+    ignore_index: -1
+    reduction: mean
+
+  callbacks_params:
+    loss:
+      callback: CriterionCallback
+      input_key: mask 
+
+    optim:
+      callback: OptimizerCallback
+      # accumulation_steps: 16
+
+    perplexity:
+      callback: PerplexityCallback
+      input_key: mask
+      mask_ignore_index: -1  # same as in loss
+      size_average: mean     # same as in loss
+
+    saver:
+      callback: CheckpointCallback
+
+  stage1:
+    state_params:
+      num_epochs: 10
+    
+    optimizer_params:
+      optimizer: &opt AdamW
+      lr: 0.00001
+      betas: &betas [0.9, 0.999]
+      eps: &eps 0.000000001
+
+  stage2:
+    state_params:
+      num_epochs: 10
+    
+    optimizer_params:
+      optimizer: *opt
+      lr: 0.000001
+      betas: *betas
+      eps: *eps
+  
+  stage3:
+    state_params:
+      num_epochs: 5
+    
+    optimizer_params:
+      optimizer: *opt
+      lr: 0.0000001
+      betas: *betas
+      eps: *eps
