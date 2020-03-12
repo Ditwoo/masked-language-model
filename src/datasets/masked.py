@@ -1,6 +1,8 @@
 import numpy as np
+import torch
 from torch.utils.data import Dataset
 from transformers import BasicTokenizer
+from nltk.tokenize import sent_tokenize
 from typing import List, Tuple
 
 
@@ -48,7 +50,14 @@ class TokensDataset(Dataset):
 class LinesDataset(TokensDataset):
     def __init__(self, file: str, *args, **kwargs):
         with open(file, "r") as f:
-            texts = f.readlines()
+            texts = [t.strip() for t in f.readlines() if len(t.strip())]
+        super().__init__(*args, texts=texts, **kwargs)
+
+
+class SentencesDataset(TokensDataset):
+    def __init__(self, file: str, *args, **kwargs):
+        with open(file, "r") as f:
+            texts = sent_tokenize(f.read())
         super().__init__(*args, texts=texts, **kwargs)
 
 

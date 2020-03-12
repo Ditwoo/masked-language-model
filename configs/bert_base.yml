@@ -14,8 +14,8 @@ stages:
   data_params:
     num_workers: &nw 8
     batch_size: 16
-    train: train_file.txt
-    valid: valid_file.txt
+    train: data/shakespeare.txt
+    valid: data/valid.txt
     tokenizer: bert-base-uncased
     mask_ignore_index: -1
 

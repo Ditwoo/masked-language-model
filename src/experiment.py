@@ -1,7 +1,8 @@
 from collections import OrderedDict
 from catalyst.dl import ConfigExperiment
 from transformers import BertTokenizer
-from .datasets import LinesDataset, MLMCollateFn
+from .datasets import SentencesDataset as Dataset
+from .datasets import MLMCollateFn as Collator
 
 
 class Experiment(ConfigExperiment):
@@ -17,13 +18,13 @@ class Experiment(ConfigExperiment):
 
         datasets = OrderedDict()
         datasets["train"] = dict(
-            dataset=LinesDataset(
+            dataset=Dataset(
                 file=train, 
                 tokenizer=tokenizer,
                 masking_pcnt=0.15,
                 mask_with_random_word_pcnt=0.1
             ),
-            collate_fn=MLMCollateFn(
+            collate_fn=Collator(
                 pad_token_id=tokenizer.pad_token_id,
                 mask_ignore_index=mask_ignore_index,
                 post_pad=True,
@@ -33,13 +34,13 @@ class Experiment(ConfigExperiment):
         print(f" * Num records in train dataset - {len(datasets['train']['dataset'])}")
 
         datasets["valid"] = dict(
-            dataset=LinesDataset(
-                file=train, 
+            dataset=Dataset(
+                file=valid, 
                 tokenizer=tokenizer,
                 masking_pcnt=0.15,
                 mask_with_random_word_pcnt=0.1
             ),
-            collate_fn=MLMCollateFn(
+            collate_fn=Collator(
                 pad_token_id=tokenizer.pad_token_id,
                 mask_ignore_index=mask_ignore_index,
                 post_pad=True,

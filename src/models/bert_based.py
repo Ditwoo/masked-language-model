@@ -5,6 +5,7 @@ from transformers import BertForMaskedLM
 
 class BertBasedMLM(nn.Module):
     def __init__(self, pretrain: str = 'bert-base-uncased'):
+        super().__init__()
         self.core = BertForMaskedLM.from_pretrained(pretrain)
 
     def forward(self, input_ids, token_type_ids=None):
